@@ -22,27 +22,7 @@
   MdeModulePkg/MdeModulePkg.dec
   UefiCpuPkg/UefiCpuPkg.dec
 
-[LibraryClasses]
-  BaseLib
-  BaseMemoryLib
-  CpuLib
-  DebugLib
-  DxeServicesTableLib
-  MemoryAllocationLib
-  MtrrLib
-  UefiBootServicesTableLib
-  UefiDriverEntryPoint
-  LocalApicLib
-  UefiCpuLib
-  UefiLib
-  CpuExceptionHandlerLib
-  HobLib
-  ReportStatusCodeLib
-  MpInitLib
-  TimerLib
-  PeCoffGetEntryPointLib
-
-[Sources]
+[Sources.IA32, Sources.X64]
   CpuDxe.c
   CpuDxe.h
   CpuGdt.c
@@ -59,6 +39,28 @@
 [Sources.X64]
   X64/CpuAsm.nasm
   X64/PagingAttribute.c
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  CpuLib
+  DebugLib
+  DxeServicesTableLib
+  MemoryAllocationLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  UefiCpuLib
+  UefiLib
+  CpuExceptionHandlerLib
+  HobLib
+  ReportStatusCodeLib
+  TimerLib
+  PeCoffGetEntryPointLib
+
+[LibraryClasses.Ia32, LibraryClasses.X64]
+  LocalApicLib
+  MtrrLib
+  MpInitLib
 
 [Protocols]
   gEfiCpuArchProtocolGuid                       ## PRODUCES
