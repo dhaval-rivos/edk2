@@ -25,13 +25,14 @@
 #
 
 [Sources.IA32]
+  BaseUefiCpuLib.c
   Ia32/InitializeFpu.nasm
 
 [Sources.X64]
+  BaseUefiCpuLib.c
   X64/InitializeFpu.nasm
 
 [Sources]
-  BaseUefiCpuLib.c
 
 [Packages]
   MdePkg/MdePkg.dec
