@@ -127,6 +127,7 @@
 !if $(TOOL_CHAIN_TAG) != "XCODE5"
   UefiCpuPkg/Library/CpuExceptionHandlerLib/SecPeiCpuExceptionHandlerLib.inf
 !endif
+  UefiCpuPkg/CpuTimerDxe/CpuTimerDxe.inf
 
 [Components.IA32, Components.X64]
   UefiCpuPkg/CpuFeatures/CpuFeaturesPei.inf {
