@@ -40,6 +40,10 @@
   X64/CpuAsm.nasm
   X64/PagingAttribute.c
 
+[Sources.RISCV64]
+  RiscV64/CpuDxe.c
+  RiscV64/CpuDxe.h
+
 [LibraryClasses]
   BaseLib
   BaseMemoryLib
