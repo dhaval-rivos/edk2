@@ -8,7 +8,27 @@
 
 #include <PiPei.h>
 
-#include "SecMain.h"
+#include <Ppi/SecPlatformInformation2.h>
+#include <Ppi/TemporaryRamDone.h>
+#include <Ppi/SecPerformance.h>
+#include <Ppi/PeiCoreFvLocation.h>
+#include <Ppi/RepublishSecPpi.h>
+
+#include <Guid/FirmwarePerformance.h>
+
+#include <Library/DebugLib.h>
+#include <Library/PcdLib.h>
+#include <Library/BaseMemoryLib.h>
+#include <Library/PlatformSecLib.h>
+#include <Library/CpuLib.h>
+#include <Library/UefiCpuLib.h>
+#include <Library/PeCoffGetEntryPointLib.h>
+#include <Library/PeCoffExtraActionLib.h>
+#include <Library/DebugAgentLib.h>
+#include <Library/CpuExceptionHandlerLib.h>
+#include <Library/ReportStatusCodeLib.h>
+#include <Library/PeiServicesTablePointerLib.h>
+#include <Library/HobLib.h>
 
 /**
   Find core image base.
