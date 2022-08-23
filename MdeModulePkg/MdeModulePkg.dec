@@ -2176,5 +2176,17 @@
   # @Prompt 64bit VPD base address.
   gEfiMdeModulePkgTokenSpaceGuid.PcdVpdBaseAddress64|0x0|UINT64|0x00030006
 
+[PcdsFixedAtBuild.RISCV64]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdRiscVSecFvBase|0x0|UINT32|0x50000000
+  gEfiMdeModulePkgTokenSpaceGuid.PcdRiscVSecFvSize|0x0|UINT32|0x50000001
+  gEfiMdeModulePkgTokenSpaceGuid.PcdRiscVPeiFvBase|0x0|UINT32|0x50000002
+  gEfiMdeModulePkgTokenSpaceGuid.PcdRiscVPeiFvSize|0x0|UINT32|0x50000003
+  gEfiMdeModulePkgTokenSpaceGuid.PcdRiscVDxeFvBase|0x0|UINT32|0x50000004
+  gEfiMdeModulePkgTokenSpaceGuid.PcdRiscVDxeFvSize|0x0|UINT32|0x50000005
+  gEfiMdeModulePkgTokenSpaceGuid.PcdRiscVDtbFvBase|0x0|UINT32|0x50000006
+  gEfiMdeModulePkgTokenSpaceGuid.PcdRiscVDtbFvSize|0x0|UINT32|0x50000007
+  gEfiMdeModulePkgTokenSpaceGuid.PcdTemporaryRamBase|0|UINT32|0x50000008
+  gEfiMdeModulePkgTokenSpaceGuid.PcdTemporaryRamSize|0|UINT32|0x50000009
+
 [UserExtensions.TianoCore."ExtraFiles"]
   MdeModulePkgExtra.uni
