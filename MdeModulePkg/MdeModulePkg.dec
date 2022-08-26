@@ -1578,6 +1578,11 @@
   # @Prompt The value of Retry Count,  Default value is 5.
   gEfiMdeModulePkgTokenSpaceGuid.PcdAhciCommandRetryCount|5|UINT32|0x00000032
 
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFvBaseAddress|0|UINT64|0x00000033
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFdBaseAddress|0|UINT64|0x00000034
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFvSize|0|UINT32|0x00000035
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFdSize|0|UINT32|0x00000036
+
 [PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]
   ## This PCD defines the Console output row. The default value is 25 according to UEFI spec.
   #  This PCD could be set to 0 then console output would be at max column and max row.
@@ -1627,6 +1632,16 @@
   # gEfiMdeModulePkgTokenSpaceGuid.PcdBootDiscoveryPolicy|L"BootDiscoveryPolicy"|gBootDiscoveryPolicyMgrFormsetGuid|0
   # @Prompt Boot Discovery Policy
   gEfiMdeModulePkgTokenSpaceGuid.PcdBootDiscoveryPolicy|2|UINT32|0x4000000f
+
+[PcdsFixedAtBuild.RISCV64]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSecMemFvBase|0|UINT32|0x50000000
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSecMemFvSize|0|UINT32|0x50000001
+  gEfiMdeModulePkgTokenSpaceGuid.PcdPeiMemFvBase|0|UINT32|0x50000003
+  gEfiMdeModulePkgTokenSpaceGuid.PcdPeiMemFvSize|0|UINT32|0x50000004
+  gEfiMdeModulePkgTokenSpaceGuid.PcdDxeMemFvBase|0|UINT32|0x50000005
+  gEfiMdeModulePkgTokenSpaceGuid.PcdDxeMemFvSize|0|UINT32|0x50000006
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSecPeiTempRamBase|0|UINT32|0x50000007
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSecPeiTempRamSize|0|UINT32|0x50000008
 
 [PcdsFixedAtBuild.AARCH64, PcdsPatchableInModule.AARCH64]
   gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiExposedTableVersions|0x20|UINT32|0x0001004c
