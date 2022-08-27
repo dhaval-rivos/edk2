@@ -1,0 +1,74 @@
+## @file
+#  CPU driver installs CPU Architecture Protocol.
+#
+#  Copyright (c) 2022, Ventana Micro Systems Inc. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = RiscVCpuDxe
+  MODULE_UNI_FILE                = RiscVCpuDxe.uni
+  FILE_GUID                      = 298DA724-AEB8-4ABD-8EF5-CF59DC14F698
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = InitializeCpu
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  UefiCpuPkg/UefiCpuPkg.dec
+
+[Sources]
+  RiscV64/CpuDxe.c
+  RiscV64/CpuDxe.h
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  CpuLib
+  DebugLib
+  DxeServicesTableLib
+  MemoryAllocationLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  UefiCpuLib
+  UefiLib
+  CpuExceptionHandlerLib
+  HobLib
+  ReportStatusCodeLib
+  TimerLib
+  PeCoffGetEntryPointLib
+  RiscVSbiLib
+
+[Protocols]
+  gEfiCpuArchProtocolGuid                       ## PRODUCES
+  gEfiMpServiceProtocolGuid                     ## PRODUCES
+  gEfiSmmBase2ProtocolGuid                      ## SOMETIMES_CONSUMES
+  gRiscVEfiBootProtocolGuid                     ## PRODUCES
+
+[Guids]
+  gIdleLoopEventGuid                            ## CONSUMES           ## Event
+  gEfiVectorHandoffTableGuid                    ## SOMETIMES_CONSUMES ## SystemTable
+
+[Ppis]
+  gEfiSecPlatformInformation2PpiGuid            ## UNDEFINED # HOB
+  gEfiSecPlatformInformationPpiGuid             ## UNDEFINED # HOB
+
+[Pcd]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdPteMemoryEncryptionAddressOrMask    ## CONSUMES
+  gEfiMdeModulePkgTokenSpaceGuid.PcdCpuStackGuard                       ## CONSUMES
+  gEfiMdeModulePkgTokenSpaceGuid.PcdHeapGuardPropertyMask               ## CONSUMES
+  gEfiMdeModulePkgTokenSpaceGuid.PcdNullPointerDetectionPropertyMask    ## CONSUMES
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuStackSwitchExceptionList              ## CONSUMES
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuKnownGoodStackSize                    ## CONSUMES
+  gEfiMdeModulePkgTokenSpaceGuid.PcdTdxSharedBitMask                    ## CONSUMES
+  gEfiMdeModulePkgTokenSpaceGuid.PcdRiscVTimerFrequencyInHz ## CONSUMES
+
+[Depex]
+  TRUE
+
+[UserExtensions.TianoCore."ExtraFiles"]
+  RiscVCpuDxeExtra.uni
