@@ -1,0 +1,65 @@
+## @file
+#  Platform PEI driver
+#
+#  This module provides platform specific functions
+#
+#  Copyright (c) 2021, Hewlett Packard Enterprise Development LP. All rights reserved.<BR>
+#  Copyright (c) 2022, Ventana Micro Systems Inc. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001b
+  BASE_NAME                      = PlatformPei
+  FILE_GUID                      = 0F26B9AF-3E38-46E8-9D35-0318E903E049
+  MODULE_TYPE                    = PEIM
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = InitializePlatform
+
+#
+# The following information is for reference only and not required by the build tools.
+#
+#  VALID_ARCHITECTURES           = RISCV64
+#
+
+[Sources]
+  RiscV64/Fv.c
+  RiscV64/MemDetect.c
+  RiscV64/Platform.c
+  RiscV64/Platform.h
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+  UefiCpuPkg/UefiCpuPkg.dec
+
+[Guids]
+  gEfiMemoryTypeInformationGuid
+
+[LibraryClasses]
+  DebugLib
+  HobLib
+  FdtLib
+  IoLib
+  PcdLib
+  PeimEntryPoint
+  PeiResourcePublicationLib
+  PlatformPeiLib
+
+[LibraryClasses.RISCV64]
+  RiscVSbiLib
+
+[Pcd.RISCV64]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdPeiMemFvBase
+  gEfiMdeModulePkgTokenSpaceGuid.PcdPeiMemFvSize
+  gEfiMdeModulePkgTokenSpaceGuid.PcdDxeMemFvBase
+  gEfiMdeModulePkgTokenSpaceGuid.PcdDxeMemFvSize
+
+[Ppis]
+  gEfiPeiMasterBootModePpiGuid
+
+[Depex]
+  TRUE
