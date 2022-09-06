@@ -350,6 +350,9 @@
   # @Prompt Access to non-SMRAM memory is restricted to reserved, runtime and ACPI NVS type after SmmReadyToLock.
   gUefiCpuPkgTokenSpaceGuid.PcdCpuSmmRestrictedMemoryAccess|TRUE|BOOLEAN|0x3213210F
 
+[PcdsFixedAtBuild.RISCV64]
+  gUefiCpuPkgTokenSpaceGuid.PcdRiscVTimerFrequencyInHz|0|UINT32|0x50000000
+
 [PcdsDynamic, PcdsDynamicEx]
   ## Contains the pointer to a CPU S3 data buffer of structure ACPI_CPU_DATA.
   # @Prompt The pointer to a CPU S3 data buffer.
