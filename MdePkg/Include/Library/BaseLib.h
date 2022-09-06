@@ -150,6 +150,16 @@ typedef struct {
 
 #define BASE_LIBRARY_JUMP_BUFFER_ALIGNMENT  8
 
+VOID
+RiscVSetSupervisorScratch (
+  UINT64
+  );
+
+UINT64
+RiscVGetSupervisorScratch (
+  VOID
+  );
+
 #endif // defined (MDE_CPU_RISCV64)
 
 //
