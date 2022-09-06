@@ -29,20 +29,22 @@
   DebugLib
   DxeServicesTableLib
   MemoryAllocationLib
-  MtrrLib
   UefiBootServicesTableLib
   UefiDriverEntryPoint
-  LocalApicLib
-  UefiCpuLib
   UefiLib
   CpuExceptionHandlerLib
   HobLib
   ReportStatusCodeLib
-  MpInitLib
   TimerLib
   PeCoffGetEntryPointLib
 
-[Sources]
+[LibraryClasses.IA32, LibraryClasses.X64]
+  LocalApicLib
+  MpInitLib
+  MtrrLib
+  UefiCpuLib
+
+[Sources.IA32, Sources.X64]
   CpuDxe.c
   CpuDxe.h
   CpuGdt.c
