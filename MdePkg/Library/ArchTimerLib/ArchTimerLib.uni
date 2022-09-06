@@ -1,0 +1,14 @@
+// /** @file
+// Base CPU Timer Library
+//
+// Provides basic timer support using architecture specific methods.
+//
+// Copyright (c) 2022, Ventana Micro Systems Inc. All rights reserved.<BR>
+//
+// SPDX-License-Identifier: BSD-2-Clause-Patent
+//
+// **/
+
+#string STR_MODULE_ABSTRACT             #language en-US "CPU Timer Library"
+
+#string STR_MODULE_DESCRIPTION          #language en-US "Provides basic timer support using architecture specific methods"
