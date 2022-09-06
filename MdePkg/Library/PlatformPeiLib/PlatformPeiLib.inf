@@ -1,0 +1,40 @@
+## @file
+#  Platform Initialization Pei Library
+#
+#  Copyright (c) 2020, Hewlett Packard Enterprise Development LP. All rights reserved.<BR>
+#  Copyright (c) 2022, Ventana Micro Systems Inc. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION    = 0x0001001b
+  BASE_NAME      = PlatformPeiLib
+  FILE_GUID      = B35BD738-787B-47FB-8139-20193442CC49
+  MODULE_TYPE    = PEIM
+  VERSION_STRING = 1.0
+  LIBRARY_CLASS  = PlatformPeiLib
+
+[Sources.RISCV64]
+  RiscV64/PlatformPeiLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  UefiCpuPkg/UefiCpuPkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+
+[LibraryClasses]
+  DebugLib
+  HobLib
+  FdtLib
+  PcdLib
+  PeimEntryPoint
+  BaseLib
+
+[LibraryClasses.RISCV64]
+  RiscVSbiLib
+
+[Guids]
+  gFdtHobGuid   ## PRODUCES
