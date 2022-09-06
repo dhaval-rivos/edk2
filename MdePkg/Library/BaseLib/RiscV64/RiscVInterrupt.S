@@ -8,13 +8,16 @@
 //
 //------------------------------------------------------------------------------
 
+#include <Register/RiscV64/RiscVImpl.h>
+
 ASM_GLOBAL ASM_PFX(RiscVDisableSupervisorModeInterrupts)
 ASM_GLOBAL ASM_PFX(RiscVEnableSupervisorModeInterrupt)
 ASM_GLOBAL ASM_PFX(RiscVGetSupervisorModeInterrupts)
+ASM_GLOBAL ASM_PFX(RiscVDisableTimerInterrupt)
+ASM_GLOBAL ASM_PFX(RiscVEnableTimerInterrupt)
+ASM_GLOBAL ASM_PFX(RiscVClearPendingTimerInterrupt)
 
-#define  SSTATUS_SIE                 0x00000002
-#define  CSR_SSTATUS                 0x100
-  #define  SSTATUS_SPP_BIT_POSITION  8
+#define  SSTATUS_SPP_BIT_POSITION  8
 
 //
 // This routine disables supervisor mode interrupt
@@ -61,3 +64,26 @@ ASM_PFX(RiscVGetSupervisorModeInterrupts):
   andi a0, a0, SSTATUS_SIE
   ret
 
+//
+// This routine disables supervisor mode timer interrupt
+//
+ASM_PFX(RiscVDisableTimerInterrupt):
+    li   a0, SIP_STIP
+    csrc CSR_SIE, a0
+    ret
+
+//
+// This routine enables supervisor mode timer interrupt
+//
+ASM_PFX(RiscVEnableTimerInterrupt):
+    li    a0, SIP_STIP
+    csrs CSR_SIE, a0
+    ret
+
+//
+// This routine clears pending supervisor mode timer interrupt
+//
+ASM_PFX(RiscVClearPendingTimerInterrupt):
+    li   a0, SIP_STIP
+    csrc CSR_SIP, a0
+    ret
