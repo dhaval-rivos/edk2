@@ -213,6 +213,26 @@ AddEdkToolsToPath() {
 
 }
 
+UpdateRiscVToolsDefFile() {
+
+  # binutils 2.38+ needs zicsr_zifencei in -march
+  # To support older toolchain, run gcc with latest -march
+  # and check if it succeeds
+  ${GCC5_RISCV64_PREFIX}gcc -march=rv64imafdc_zicsr_zifencei -x c -c /dev/null \
+                  -o $CONF_PATH/TmpZicsrZifencei > /dev/null 2>&1
+  ZicsrZifenceiNeeded=$?
+
+  if [ $ZicsrZifenceiNeeded -eq 0 ]
+  then
+    echo "Updating $CONF_PATH/tools_def.txt"
+    sed -i 's/rv64imafdc/rv64imafdc_zicsr_zifencei/g' $CONF_PATH/tools_def.txt
+
+    # Remove the temporary file
+    rm $CONF_PATH/TmpZicsrZifencei
+  fi
+
+}
+
 CopySingleTemplateFile() {
 
   SRC_FILENAME=Conf/$1.template
@@ -227,6 +247,15 @@ CopySingleTemplateFile() {
   echo "     to $DST_FILENAME"
   SRC_FILENAME=$EDK_TOOLS_PATH/$SRC_FILENAME
   cp $SRC_FILENAME $DST_FILENAME
+
+  # Update RISC-V definitions based on toolchain capabilities
+  if [ "$1" = "tools_def" ]
+  then
+    if ! [ -z ${GCC5_RISCV64_PREFIX} ]
+    then
+      UpdateRiscVToolsDefFile
+    fi
+  fi
 
 }
 
