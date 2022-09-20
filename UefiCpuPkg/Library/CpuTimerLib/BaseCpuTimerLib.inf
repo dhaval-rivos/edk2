@@ -22,14 +22,27 @@
   X86/CpuTimerLib.c
   X86/BaseCpuTimerLib.c
 
+[Sources.RISCV64]
+  RiscV64/CpuTimerLib.c
+
 [Packages]
   MdePkg/MdePkg.dec
   UefiCpuPkg/UefiCpuPkg.dec
+
+[Packages.RISCV64]
+  EmbeddedPkg/EmbeddedPkg.dec
 
 [LibraryClasses]
   BaseLib
   PcdLib
   DebugLib
 
+[LibraryClasses.RISCV64]
+  FdtLib
+  HobLib
+
 [Pcd.IA32, Pcd.X64]
   gUefiCpuPkgTokenSpaceGuid.PcdCpuCoreCrystalClockFrequency  ## CONSUMES
+
+[Guids.RISCV64]
+  gFdtHobGuid
