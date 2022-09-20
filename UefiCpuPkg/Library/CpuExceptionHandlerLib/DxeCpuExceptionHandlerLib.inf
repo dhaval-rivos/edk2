@@ -32,7 +32,7 @@
   X64/ArchExceptionHandler.c
   X64/ArchInterruptDefs.h
 
-[Sources.common]
+[Sources.IA32, Sources.X64]
   CpuExceptionCommon.h
   CpuExceptionCommon.c
   PeiDxeSmmCpuException.c
@@ -56,8 +56,10 @@
   SerialPortLib
   PrintLib
   SynchronizationLib
-  LocalApicLib
   PeCoffGetEntryPointLib
   MemoryAllocationLib
   DebugLib
+
+[LibraryClasses.IA32, LibraryClasses.X64]
+  LocalApicLib
   VmgExitLib
