@@ -3,6 +3,7 @@
 #
 #  Copyright (c) 2008 - 2019, Intel Corporation. All rights reserved.<BR>
 #  Copyright (c) 2017, AMD Incorporated. All rights reserved.<BR>
+#  Copyright (c) 2022, Ventana Micro Systems Inc. All rights reserved.<BR>
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -29,20 +30,22 @@
   DebugLib
   DxeServicesTableLib
   MemoryAllocationLib
-  MtrrLib
   UefiBootServicesTableLib
   UefiDriverEntryPoint
-  LocalApicLib
-  UefiCpuLib
   UefiLib
   CpuExceptionHandlerLib
   HobLib
   ReportStatusCodeLib
-  MpInitLib
   TimerLib
   PeCoffGetEntryPointLib
 
-[Sources]
+[LibraryClasses.IA32, LibraryClasses.X64]
+  LocalApicLib
+  MpInitLib
+  MtrrLib
+  UefiCpuLib
+
+[Sources.IA32, Sources.X64]
   CpuDxe.c
   CpuDxe.h
   CpuGdt.c
