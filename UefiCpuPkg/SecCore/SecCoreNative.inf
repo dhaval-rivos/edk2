@@ -27,7 +27,7 @@
 #  VALID_ARCHITECTURES           = IA32 X64 EBC
 #
 
-[Sources]
+[Sources.IA32, Sources.X64]
   SecMain.c
   SecMain.h
   FindPeiCore.c
@@ -38,30 +38,31 @@
   MdeModulePkg/MdeModulePkg.dec
   UefiCpuPkg/UefiCpuPkg.dec
 
-[LibraryClasses]
-  BaseMemoryLib
-  DebugLib
+[LibraryClasses.IA32, LibraryClasses.X64]
   PlatformSecLib
-  PcdLib
-  DebugAgentLib
-  CpuLib
   UefiCpuLib
-  PeCoffGetEntryPointLib
-  PeCoffExtraActionLib
   CpuExceptionHandlerLib
-  ReportStatusCodeLib
   PeiServicesLib
   PeiServicesTablePointerLib
   HobLib
+  ReportStatusCodeLib
+  DebugAgentLib
 
-[Ppis]
+[LibraryClasses]
+  BaseMemoryLib
+  DebugLib
+  PcdLib
+  CpuLib
+  PeCoffGetEntryPointLib
+  PeCoffExtraActionLib
+
+[Ppis.IA32, Ppis.X64]
   ## SOMETIMES_CONSUMES
   ## PRODUCES
   gEfiSecPlatformInformationPpiGuid
   ## SOMETIMES_CONSUMES
   ## SOMETIMES_PRODUCES
   gEfiSecPlatformInformation2PpiGuid
-  gEfiTemporaryRamDonePpiGuid                          ## PRODUCES
   ## NOTIFY
   ## SOMETIMES_CONSUMES
   gPeiSecPerformancePpiGuid
@@ -73,7 +74,7 @@
   ## SOMETIMES_PRODUCES   ## HOB
   gEfiFirmwarePerformanceGuid
 
-[Pcd]
+[Pcd.IA32, Pcd.X64]
   gUefiCpuPkgTokenSpaceGuid.PcdPeiTemporaryRamStackSize  ## CONSUMES
   gEfiMdeModulePkgTokenSpaceGuid.PcdMigrateTemporaryRamFirmwareVolumes  ## CONSUMES
 
