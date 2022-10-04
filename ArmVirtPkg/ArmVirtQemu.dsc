@@ -397,7 +397,7 @@
     <LibraryClasses>
       NULL|ArmVirtPkg/Library/ArmVirtTimerFdtClientLib/ArmVirtTimerFdtClientLib.inf
   }
-  ArmPlatformPkg/Drivers/NorFlashDxe/NorFlashDxe.inf
+  MdeModulePkg/Universal/NorFlashDxe/NorFlashDxe.inf
   MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
 
   #
