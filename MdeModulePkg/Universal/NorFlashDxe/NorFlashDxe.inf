@@ -10,7 +10,7 @@
 
 [Defines]
   INF_VERSION                    = 0x00010005
-  BASE_NAME                      = ArmVeNorFlashDxe
+  BASE_NAME                      = NorFlashDxe
   FILE_GUID                      = 93E34C7E-B50E-11DF-9223-2443DFD72085
   MODULE_TYPE                    = DXE_RUNTIME_DRIVER
   VERSION_STRING                 = 1.0
@@ -26,8 +26,6 @@
 [Packages]
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
-  ArmPlatformPkg/ArmPlatformPkg.dec
-  EmbeddedPkg/EmbeddedPkg.dec
 
 [LibraryClasses]
   IoLib
@@ -65,7 +63,7 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareBase
   gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareSize
 
-  gArmPlatformTokenSpaceGuid.PcdNorFlashCheckBlockLocked
+  gEfiMdeModulePkgTokenSpaceGuid.PcdNorFlashCheckBlockLocked
 
 [Depex]
   gEfiCpuArchProtocolGuid

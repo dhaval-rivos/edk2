@@ -60,7 +60,7 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareSize
 
 [FeaturePcd]
-  gArmPlatformTokenSpaceGuid.PcdNorFlashCheckBlockLocked
+  gEfiMdeModulePkgTokenSpaceGuid.PcdNorFlashCheckBlockLocked
 
 [Depex]
   TRUE
