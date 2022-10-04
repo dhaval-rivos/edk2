@@ -21,9 +21,8 @@
 
 [Packages]
   MdePkg/MdePkg.dec
-  ArmPlatformPkg/ArmPlatformPkg.dec
-  ArmPkg/ArmPkg.dec
-  ArmVirtPkg/ArmVirtPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  OvmfPkg/OvmfPkg.dec
   EmbeddedPkg/EmbeddedPkg.dec
 
 [LibraryClasses]
@@ -38,5 +37,5 @@
   gFdtClientProtocolGuid
 
 [Pcd]
-  gArmTokenSpaceGuid.PcdFvBaseAddress
-  gArmTokenSpaceGuid.PcdFvSize
+  gUefiOvmfPkgTokenSpaceGuid.PcdOvmfFvBaseAddress
+  gUefiOvmfPkgTokenSpaceGuid.PcdOvmfFvSize

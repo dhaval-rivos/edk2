@@ -94,8 +94,8 @@ NorFlashPlatformGetDevices (
       // Disregard any flash devices that overlap with the primary FV.
       // The firmware is not updatable from inside the guest anyway.
       //
-      if ((PcdGet64 (PcdFvBaseAddress) + PcdGet32 (PcdFvSize) > Base) &&
-          ((Base + Size) > PcdGet64 (PcdFvBaseAddress)))
+      if ((PcdGet64 (PcdOvmfFvBaseAddress) + PcdGet32 (PcdOvmfFvSize) > Base) &&
+          ((Base + Size) > PcdGet64 (PcdOvmfFvBaseAddress)))
       {
         continue;
       }
