@@ -205,9 +205,6 @@ NorFlashWriteSingleWord (
     SEND_NOR_COMMAND (Instance->DeviceBaseAddress, 0, P30_CMD_CLEAR_STATUS_REGISTER);
   }
 
-  // Put device back into Read Array mode
-  SEND_NOR_COMMAND (Instance->DeviceBaseAddress, 0, P30_CMD_READ_ARRAY);
-
   return Status;
 }
 
@@ -338,9 +335,6 @@ NorFlashWriteBuffer (
   }
 
 EXIT:
-  // Put device back into Read Array mode
-  SEND_NOR_COMMAND (Instance->DeviceBaseAddress, 0, P30_CMD_READ_ARRAY);
-
   return Status;
 }
 
@@ -750,6 +744,9 @@ NorFlashWriteSingleBlock (
       }
 
       TempStatus = NorFlashWriteSingleWord (Instance, WordAddr, WordToWrite);
+      // Put device back into Read Array mode
+      SEND_NOR_COMMAND (Instance->DeviceBaseAddress, 0, P30_CMD_READ_ARRAY);
+
       if (EFI_ERROR (TempStatus)) {
         return EFI_DEVICE_ERROR;
       }
