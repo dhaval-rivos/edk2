@@ -20,9 +20,7 @@
 #define __stringify_1(x...)	#x
 #define __stringify(x...)	__stringify_1(x)
 
-//asm volatile("nop")
-
-#define CMO_OP(_op, _start)			\
+#define CMO_OP(_op, _start)\
 asm volatile("cbo." __stringify(_op) " (%0)" :: "r" (Start))
 
 typedef enum{
@@ -251,7 +249,6 @@ WriteBackInvalidateDataCacheRange (
   IN      UINTN  Length
   )
 {
-  //Note: For this to work 
   CacheOpCacheRange(Address, Length, flsh);
   return Address;
 }
