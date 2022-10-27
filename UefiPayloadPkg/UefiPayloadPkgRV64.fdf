@@ -9,7 +9,7 @@
 ##
 
 [Defines]
-DEFINE FD_BASE       = 0x00800000
+DEFINE FD_BASE       = 0x80200000
 DEFINE FD_BLOCK_SIZE = 0x00001000
 
 !if $(TARGET) == "NOOPT"
@@ -55,6 +55,8 @@ READ_LOCK_STATUS   = TRUE
 
 !if $(UNIVERSAL_PAYLOAD) == FALSE
 INF UefiPayloadPkg/UefiPayloadEntry/UefiPayloadEntry.inf
+!else
+INF UefiPayloadPkg/UefiPayloadEntry/UniversalPayloadEntry.inf
 !endif
 FILE FV_IMAGE = 4E35FD93-9C72-4c15-8C4B-E77F1DB2D793 {
     SECTION FV_IMAGE = DXEFV
@@ -122,23 +124,6 @@ INF MdeModulePkg/Universal/ResetSystemRuntimeDxe/ResetSystemRuntimeDxe.inf
   INF MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableDxe/FirmwarePerformanceDxe.inf
 !endif
 
-#
-# SMM Support
-#
-!if $(SMM_SUPPORT) == TRUE
-  INF UefiPayloadPkg/SmmAccessDxe/SmmAccessDxe.inf
-  INF UefiPayloadPkg/SmmControlRuntimeDxe/SmmControlRuntimeDxe.inf
-  INF UefiPayloadPkg/BlSupportSmm/BlSupportSmm.inf
-  INF MdeModulePkg/Core/PiSmmCore/PiSmmIpl.inf
-  INF MdeModulePkg/Core/PiSmmCore/PiSmmCore.inf
-  INF UefiCpuPkg/CpuIo2Smm/CpuIo2Smm.inf
-  INF UefiCpuPkg/PiSmmCpuDxeSmm/PiSmmCpuDxeSmm.inf
-  INF UefiPayloadPkg/PchSmiDispatchSmm/PchSmiDispatchSmm.inf
-!if $(PERFORMANCE_MEASUREMENT_ENABLE)
-  INF  MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableSmm/FirmwarePerformanceSmm.inf
-!endif
-!endif
-
 !if $(VARIABLE_SUPPORT) == "EMU"
   INF MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
 !elseif $(VARIABLE_SUPPORT) == "SPI"
@@ -171,6 +156,10 @@ INF MdeModulePkg/Logo/LogoDxe.inf
 #
 INF MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
 INF MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
+
+# RISC-V Core Drivers
+INF  UefiCpuPkg/CpuTimerDxe/CpuTimerDxe.inf
+INF  EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf
 
 #
 # ISA Support
@@ -279,12 +268,12 @@ INF ShellPkg/Application/Shell/Shell.inf
 
 [Rule.Common.SEC]
   FILE SEC = $(NAMED_GUID) {
-    PE32     PE32   Align=32    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    PE32     PE32   Align=4K    $(INF_OUTPUT)/$(MODULE_NAME).efi
   }
 
 [Rule.Common.PEI_CORE]
   FILE PEI_CORE = $(NAMED_GUID) {
-    PE32     PE32   Align=Auto    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    PE32     PE32   Align=4K    $(INF_OUTPUT)/$(MODULE_NAME).efi
     UI       STRING ="$(MODULE_NAME)" Optional
     VERSION  STRING ="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }
@@ -292,14 +281,14 @@ INF ShellPkg/Application/Shell/Shell.inf
 [Rule.Common.PEIM]
   FILE PEIM = $(NAMED_GUID) {
      PEI_DEPEX PEI_DEPEX Optional        $(INF_OUTPUT)/$(MODULE_NAME).depex
-     PE32      PE32   Align=Auto           $(INF_OUTPUT)/$(MODULE_NAME).efi
+     PE32      PE32   Align=4K           $(INF_OUTPUT)/$(MODULE_NAME).efi
      UI       STRING="$(MODULE_NAME)" Optional
      VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }
 
 [Rule.Common.DXE_CORE]
   FILE DXE_CORE = $(NAMED_GUID) {
-    PE32     PE32           $(INF_OUTPUT)/$(MODULE_NAME).efi
+    PE32     PE32   Align=4K  $(INF_OUTPUT)/$(MODULE_NAME).efi
     UI       STRING="$(MODULE_NAME)" Optional
     VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }
@@ -307,7 +296,7 @@ INF ShellPkg/Application/Shell/Shell.inf
 [Rule.Common.DXE_DRIVER]
   FILE DRIVER = $(NAMED_GUID) {
     DXE_DEPEX    DXE_DEPEX Optional      $(INF_OUTPUT)/$(MODULE_NAME).depex
-    PE32     PE32                    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    PE32     PE32  Align=4K  $(INF_OUTPUT)/$(MODULE_NAME).efi
     UI       STRING="$(MODULE_NAME)" Optional
     VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }
@@ -315,21 +304,7 @@ INF ShellPkg/Application/Shell/Shell.inf
 [Rule.Common.DXE_RUNTIME_DRIVER]
   FILE DRIVER = $(NAMED_GUID) {
     DXE_DEPEX    DXE_DEPEX Optional      $(INF_OUTPUT)/$(MODULE_NAME).depex
-    PE32     PE32                    $(INF_OUTPUT)/$(MODULE_NAME).efi
-    UI       STRING="$(MODULE_NAME)" Optional
-    VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
-  }
-[Rule.Common.DXE_SMM_DRIVER]
-  FILE SMM = $(NAMED_GUID) {
-    SMM_DEPEX SMM_DEPEX Optional       $(INF_OUTPUT)/$(MODULE_NAME).depex
-    PE32      PE32                     $(INF_OUTPUT)/$(MODULE_NAME).efi
-    UI        STRING="$(MODULE_NAME)" Optional
-    VERSION   STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
-  }
-
-[Rule.Common.SMM_CORE]
-  FILE SMM_CORE = $(NAMED_GUID) {
-    PE32     PE32                    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    PE32     PE32  Align=4K  $(INF_OUTPUT)/$(MODULE_NAME).efi
     UI       STRING="$(MODULE_NAME)" Optional
     VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }
@@ -337,7 +312,7 @@ INF ShellPkg/Application/Shell/Shell.inf
 [Rule.Common.UEFI_DRIVER]
   FILE DRIVER = $(NAMED_GUID) {
     DXE_DEPEX    DXE_DEPEX Optional      $(INF_OUTPUT)/$(MODULE_NAME).depex
-    PE32     PE32                    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    PE32     PE32  Align=4K  $(INF_OUTPUT)/$(MODULE_NAME).efi
     UI       STRING="$(MODULE_NAME)" Optional
     VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }
@@ -345,21 +320,21 @@ INF ShellPkg/Application/Shell/Shell.inf
 [Rule.Common.UEFI_DRIVER.BINARY]
   FILE DRIVER = $(NAMED_GUID) {
     DXE_DEPEX DXE_DEPEX Optional      |.depex
-    PE32      PE32                    |.efi
+    PE32      PE32  Align=4K          |.efi
     UI        STRING="$(MODULE_NAME)" Optional
     VERSION   STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }
 
 [Rule.Common.UEFI_APPLICATION]
   FILE APPLICATION = $(NAMED_GUID) {
-    PE32     PE32                    $(INF_OUTPUT)/$(MODULE_NAME).efi
+    PE32     PE32 Align=4K  $(INF_OUTPUT)/$(MODULE_NAME).efi
     UI       STRING="$(MODULE_NAME)" Optional
     VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }
 
 [Rule.Common.UEFI_APPLICATION.BINARY]
   FILE APPLICATION = $(NAMED_GUID) {
-    PE32      PE32                    |.efi
+    PE32      PE32  Align=4K         |.efi
     UI        STRING="$(MODULE_NAME)" Optional
     VERSION   STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }
@@ -370,19 +345,9 @@ INF ShellPkg/Application/Shell/Shell.inf
     RAW ASL                |.aml
   }
 
-[Rule.Common.USER_DEFINED.CSM]
-  FILE FREEFORM = $(NAMED_GUID) {
-    RAW BIN                |.bin
-  }
-
-[Rule.Common.SEC.RESET_VECTOR]
-  FILE RAW = $(NAMED_GUID) {
-    RAW RAW                |.raw
-  }
-
 [Rule.Common.UEFI_APPLICATION.UI]
   FILE APPLICATION = $(NAMED_GUID) {
-    PE32      PE32                     $(INF_OUTPUT)/$(MODULE_NAME).efi
+    PE32      PE32  Align=4K  $(INF_OUTPUT)/$(MODULE_NAME).efi
     UI        STRING="Enter Setup"
     VERSION   STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }

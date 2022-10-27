@@ -159,23 +159,6 @@
 ################################################################################
 
 !include MdePkg/MdeLibs.dsc.inc
-
-  #
-  # CPU
-  #
-[LibraryClasses.X64,LibraryClasses.IA32]
-  MtrrLib|UefiCpuPkg/Library/MtrrLib/MtrrLib.inf
-  LocalApicLib|UefiCpuPkg/Library/BaseXApicX2ApicLib/BaseXApicX2ApicLib.inf
-  MicrocodeLib|UefiCpuPkg/Library/MicrocodeLib/MicrocodeLib.inf
-  UefiCpuLib|UefiCpuPkg/Library/BaseUefiCpuLib/BaseUefiCpuLib.inf
-
-[LibraryClasses.RISCV64]
-  RiscVSbiLib|MdePkg/Library/BaseRiscVSbiLib/BaseRiscVSbiLib.inf
-  BaseMemoryLib|MdePkg/Library/BaseMemoryLib/BaseMemoryLib.inf
-
-[LibraryClasses.IA32, LibraryClasses.X64]
-  BaseMemoryLib|MdePkg/Library/BaseMemoryLibRepStr/BaseMemoryLibRepStr.inf
-
 [LibraryClasses]
   #
   # Entry point
@@ -183,6 +166,10 @@
   DxeCoreEntryPoint|MdePkg/Library/DxeCoreEntryPoint/DxeCoreEntryPoint.inf
   UefiDriverEntryPoint|MdePkg/Library/UefiDriverEntryPoint/UefiDriverEntryPoint.inf
   UefiApplicationEntryPoint|MdePkg/Library/UefiApplicationEntryPoint/UefiApplicationEntryPoint.inf
+
+  RiscVSbiLib|MdePkg/Library/BaseRiscVSbiLib/BaseRiscVSbiLib.inf
+  BaseMemoryLib|MdePkg/Library/BaseMemoryLib/BaseMemoryLib.inf
+  RealTimeClockLib|EmbeddedPkg//Library/VirtualRealTimeClockLib/VirtualRealTimeClockLib.inf
 
   #
   # Basic
@@ -255,7 +242,8 @@
 !else
   TimerLib|UefiPayloadPkg/Library/AcpiTimerLib/AcpiTimerLib.inf
 !endif
-  ResetSystemLib|UefiPayloadPkg/Library/ResetSystemLib/ResetSystemLib.inf
+  ResetSystemLib|OvmfPkg/Library/ResetSystemLib/BaseResetSystemLib.inf
+
 !if $(USE_CBMEM_FOR_CONSOLE) == TRUE
   SerialPortLib|UefiPayloadPkg/Library/CbSerialPortLib/CbSerialPortLib.inf
   PlatformHookLib|MdeModulePkg/Library/BasePlatformHookLibNull/BasePlatformHookLibNull.inf
@@ -348,7 +336,7 @@
 !if $(PERFORMANCE_MEASUREMENT_ENABLE)
   PerformanceLib|MdeModulePkg/Library/DxePerformanceLib/DxePerformanceLib.inf
 !endif
-
+  ResetSystemLib|OvmfPkg/Library/ResetSystemLib/DxeResetSystemLib.inf
 [LibraryClasses.common.UEFI_DRIVER,LibraryClasses.common.UEFI_APPLICATION]
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
@@ -357,52 +345,11 @@
   PerformanceLib|MdeModulePkg/Library/DxePerformanceLib/DxePerformanceLib.inf
 !endif
 
-[LibraryClasses.common.SMM_CORE]
-!if $(SMM_SUPPORT) == TRUE
-  PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
-  SmmServicesTableLib|MdeModulePkg/Library/PiSmmCoreSmmServicesTableLib/PiSmmCoreSmmServicesTableLib.inf
-
-  MemoryAllocationLib|MdeModulePkg/Library/PiSmmCoreMemoryAllocationLib/PiSmmCoreMemoryAllocationLib.inf
-  SmmCorePlatformHookLib|MdeModulePkg/Library/SmmCorePlatformHookLibNull/SmmCorePlatformHookLibNull.inf
-  SmmMemLib|MdePkg/Library/SmmMemLib/SmmMemLib.inf
-  ReportStatusCodeLib|MdePkg/Library/BaseReportStatusCodeLibNull/BaseReportStatusCodeLibNull.inf
-!if $(PERFORMANCE_MEASUREMENT_ENABLE)
-  PerformanceLib|MdeModulePkg/Library/SmmCorePerformanceLib/SmmCorePerformanceLib.inf
-!endif
-!endif
-
-[LibraryClasses.common.DXE_SMM_DRIVER]
-!if $(SMM_SUPPORT) == TRUE
-  PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
-
-  MemoryAllocationLib|MdePkg/Library/SmmMemoryAllocationLib/SmmMemoryAllocationLib.inf
-  SmmServicesTableLib|MdePkg/Library/SmmServicesTableLib/SmmServicesTableLib.inf
-  SmmMemLib|MdePkg/Library/SmmMemLib/SmmMemLib.inf
-  MmServicesTableLib|MdePkg/Library/MmServicesTableLib/MmServicesTableLib.inf
-  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
-  SmmCpuPlatformHookLib|UefiCpuPkg/Library/SmmCpuPlatformHookLibNull/SmmCpuPlatformHookLibNull.inf
-  SmmCpuFeaturesLib|UefiCpuPkg/Library/SmmCpuFeaturesLib/SmmCpuFeaturesLib.inf
-  CpuExceptionHandlerLib|UefiCpuPkg/Library/CpuExceptionHandlerLib/SmmCpuExceptionHandlerLib.inf
-  ReportStatusCodeLib|MdePkg/Library/BaseReportStatusCodeLibNull/BaseReportStatusCodeLibNull.inf
-  SmmCpuRendezvousLib|UefiCpuPkg/Library/SmmCpuRendezvousLib/SmmCpuRendezvousLib.inf
-!if $(PERFORMANCE_MEASUREMENT_ENABLE)
-  PerformanceLib|MdeModulePkg/Library/SmmPerformanceLib/SmmPerformanceLib.inf
-!endif
-!endif
-!if $(VARIABLE_SUPPORT) == "SPI"
-  SpiFlashLib|UefiPayloadPkg/Library/SpiFlashLib/SpiFlashLib.inf
-  FlashDeviceLib|UefiPayloadPkg/Library/FlashDeviceLib/FlashDeviceLib.inf
-  BaseCryptLib|CryptoPkg/Library/BaseCryptLib/SmmCryptLib.inf
-!endif
-
 ################################################################################
 #
 # Pcd Section - list of all EDK II PCD Entries defined by this Platform.
 #
 ################################################################################
-[PcdsFeatureFlag.IA32]
-  gEfiMdeModulePkgTokenSpaceGuid.PcdDxeIplSwitchToLongMode|TRUE
-
 [PcdsFeatureFlag]
   gEfiMdeModulePkgTokenSpaceGuid.PcdConOutGopSupport|TRUE
   gEfiMdeModulePkgTokenSpaceGuid.PcdConOutUgaSupport|FALSE
@@ -465,13 +412,6 @@
   gEfiCryptoPkgTokenSpaceGuid.PcdCryptoServiceFamilyEnable.Tls.Family                               | PCD_CRYPTO_SERVICE_ENABLE_FAMILY
   gEfiCryptoPkgTokenSpaceGuid.PcdCryptoServiceFamilyEnable.TlsSet.Family                            | PCD_CRYPTO_SERVICE_ENABLE_FAMILY
   gEfiCryptoPkgTokenSpaceGuid.PcdCryptoServiceFamilyEnable.TlsGet.Family                            | PCD_CRYPTO_SERVICE_ENABLE_FAMILY
-!endif
-
-[PcdsPatchableInModule.X64]
-  gPcAtChipsetPkgTokenSpaceGuid.PcdRtcIndexRegister|$(RTC_INDEX_REGISTER)
-  gPcAtChipsetPkgTokenSpaceGuid.PcdRtcTargetRegister|$(RTC_TARGET_REGISTER)
-!if $(NETWORK_DRIVER_ENABLE) == TRUE
-  gEfiNetworkPkgTokenSpaceGuid.PcdAllowHttpConnections|TRUE
 !endif
 
 [PcdsPatchableInModule.common]
@@ -590,22 +530,8 @@
   !endif
 
 #
-# UEFI network modules
+# DXE Main
 #
-!if $(NETWORK_DRIVER_ENABLE) == TRUE
-[Defines]
-  DEFINE PLATFORMX64_ENABLE = TRUE
-  !include NetworkPkg/Network.dsc.inc
-!endif
-
-[Components.X64]
-  PcAtChipsetPkg/HpetTimerDxe/HpetTimerDxe.inf
-  PcAtChipsetPkg/PcatRealTimeClockRuntimeDxe/PcatRealTimeClockRuntimeDxe.inf
-
-[Components.X64,Components.RISCV64]
-  #
-  # DXE Core
-  #
   MdeModulePkg/Core/Dxe/DxeMain.inf {
     <LibraryClasses>
       !if $(MULTIPLE_DEBUG_PORT_SUPPORT) == TRUE
@@ -615,6 +541,11 @@
       NULL|MdeModulePkg/Library/LzmaCustomDecompressLib/LzmaCustomDecompressLib.inf
   }
 
+  #
+  # RISC-V Platform module
+  #
+   EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf
+   UefiCpuPkg/CpuTimerDxe/CpuTimerDxe.inf
   #
   # Components that produce the architectural protocols
   #
@@ -764,22 +695,6 @@
 !if $(PERFORMANCE_MEASUREMENT_ENABLE)
   MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableDxe/FirmwarePerformanceDxe.inf
 !endif
-  #
-  # SMM Support
-  #
-!if $(SMM_SUPPORT) == TRUE
-  UefiPayloadPkg/SmmAccessDxe/SmmAccessDxe.inf
-  UefiPayloadPkg/SmmControlRuntimeDxe/SmmControlRuntimeDxe.inf
-  UefiPayloadPkg/BlSupportSmm/BlSupportSmm.inf
-  MdeModulePkg/Core/PiSmmCore/PiSmmIpl.inf
-  MdeModulePkg/Core/PiSmmCore/PiSmmCore.inf
-  UefiPayloadPkg/PchSmiDispatchSmm/PchSmiDispatchSmm.inf
-  UefiCpuPkg/PiSmmCpuDxeSmm/PiSmmCpuDxeSmm.inf
-  UefiCpuPkg/CpuIo2Smm/CpuIo2Smm.inf
-!if $(PERFORMANCE_MEASUREMENT_ENABLE)
-  MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableSmm/FirmwarePerformanceSmm.inf
-!endif
-!endif
 
 !if $(VARIABLE_SUPPORT) == "EMU"
   MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
@@ -796,7 +711,6 @@
   MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteSmm.inf
   MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmmRuntimeDxe.inf
 !endif
-
   #
   # Misc
   #
@@ -823,8 +737,9 @@
   FileHandleLib|MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.inf
   ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
   !include NetworkPkg/NetworkLibs.dsc.inc
+  TimeBaseLib|EmbeddedPkg//Library/TimeBaseLib/TimeBaseLib.inf
 
-[Components.X64,Components.RISCV64]
+[Components]
   ShellPkg/DynamicCommand/TftpDynamicCommand/TftpDynamicCommand.inf {
     <PcdsFixedAtBuild>
       ## This flag is used to control initialization of the shell library
