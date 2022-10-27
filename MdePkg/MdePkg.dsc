@@ -191,5 +191,6 @@
 
 [Components.RISCV64]
   MdePkg/Library/BaseRiscVSbiLib/BaseRiscVSbiLib.inf
+  MdePkg/Library/BaseMemoryLib/BaseMemoryLib.in
 
 [BuildOptions]
