@@ -600,8 +600,6 @@
   MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
   MdeModulePkg/Universal/PlatformDriOverrideDxe/PlatformDriOverrideDxe.inf
 
-  UefiPayloadPkg/BlSupportDxe/BlSupportDxe.inf
-
   #
   # SMBIOS Support
   #
