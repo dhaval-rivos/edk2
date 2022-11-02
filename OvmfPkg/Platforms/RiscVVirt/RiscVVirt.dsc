@@ -30,6 +30,7 @@
   # Defines for default states.  These can be changed on the command line.
   # -D FLAG=VALUE
   #
+  DEFINE UNIFIED_VARSTORE        = TRUE
   DEFINE SECURE_BOOT_ENABLE      = FALSE
   DEFINE DEBUG_ON_SERIAL_PORT    = TRUE
 
@@ -110,7 +111,7 @@
   TimerLib|UefiCpuPkg/Library/CpuTimerLib/BaseCpuTimerLib.inf
   TimeBaseLib|EmbeddedPkg//Library/TimeBaseLib/TimeBaseLib.inf
   RealTimeClockLib|EmbeddedPkg//Library/VirtualRealTimeClockLib/VirtualRealTimeClockLib.inf
-!ifdef $(UNIFIED_VARSTORE)
+!if $(UNIFIED_VARSTORE) == TRUE
   VirtNorFlashPlatformLib|OvmfPkg/Library/VirtNorFlashPlatformLib/VirtNorFlashStaticLib.inf
 !else
   VirtNorFlashPlatformLib|OvmfPkg/Library/VirtNorFlashPlatformLib/VirtNorFlashDeviceTreeLib.inf
@@ -497,7 +498,7 @@
   #
   UefiCpuPkg/CpuTimerDxe/CpuTimerDxe.inf
 
-  OvmfPkg/Drivers/VirtNorFlashDxe/VirtNorFlashDxe.inf
+  OvmfPkg/VirtNorFlashDxe/VirtNorFlashDxe.inf
 
   #
   # RISC-V Core module

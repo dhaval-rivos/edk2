@@ -6,25 +6,25 @@
 
  **/
 
-#ifndef _NORFLASHPLATFORMLIB_H_
-#define _NORFLASHPLATFORMLIB_H_
+#ifndef __VIRT_NOR_FLASH_PLATFORM_LIB__
+#define __VIRT_NOR_FLASH_PLATFORM_LIB__
 
 typedef struct {
   UINTN    DeviceBaseAddress;       // Start address of the Device Base Address (DBA)
   UINTN    RegionBaseAddress;       // Start address of one single region
   UINTN    Size;
   UINTN    BlockSize;
-} NOR_FLASH_DESCRIPTION;
+} VIRT_NOR_FLASH_DESCRIPTION;
 
 EFI_STATUS
-NorFlashPlatformInitialization (
+VirtNorFlashPlatformInitialization (
   VOID
   );
 
 EFI_STATUS
-NorFlashPlatformGetDevices (
-  OUT NOR_FLASH_DESCRIPTION  **NorFlashDescriptions,
-  OUT UINT32                 *Count
+VirtNorFlashPlatformGetDevices (
+  OUT VIRT_NOR_FLASH_DESCRIPTION  **NorFlashDescriptions,
+  OUT UINT32                      *Count
   );
 
-#endif /* _NORFLASHPLATFORMLIB_H_ */
+#endif /* __VIRT_NOR_FLASH_PLATFORM_LIB__ */

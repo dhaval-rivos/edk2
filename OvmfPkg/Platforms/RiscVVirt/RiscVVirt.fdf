@@ -12,7 +12,7 @@
 !include RiscVVirt.fdf.inc
 
 ################################################################################
-!ifdef UNIFIED_VARSTORE
+!if $(UNIFIED_VARSTORE) == TRUE
 [FD.RISCV_VIRT]
 BaseAddress   = $(FW_BASE_ADDRESS)|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfFdBaseAddress
 Size          = $(FW_SIZE)|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfFirmwareFdSize
@@ -216,7 +216,7 @@ INF  OvmfPkg/AcpiPlatformDxe/AcpiPlatformDxe.inf
 INF  OvmfPkg/PlatformHasAcpiDtDxe/PlatformHasAcpiDtDxe.inf
 
 # RISC-V Platform Drivers
-INF  OvmfPkg/Drivers/VirtNorFlashDxe/VirtNorFlashDxe.inf
+INF  OvmfPkg/VirtNorFlashDxe/VirtNorFlashDxe.inf
 
 # RISC-V Core Drivers
 INF  UefiCpuPkg/CpuTimerDxe/CpuTimerDxe.inf

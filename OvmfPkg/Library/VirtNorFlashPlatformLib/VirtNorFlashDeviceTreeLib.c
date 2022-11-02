@@ -18,19 +18,19 @@
 #define MAX_FLASH_BANKS  4
 
 EFI_STATUS
-NorFlashPlatformInitialization (
+VirtNorFlashPlatformInitialization (
   VOID
   )
 {
   return EFI_SUCCESS;
 }
 
-NOR_FLASH_DESCRIPTION  mNorFlashDevices[MAX_FLASH_BANKS];
+VIRT_NOR_FLASH_DESCRIPTION  mNorFlashDevices[MAX_FLASH_BANKS];
 
 EFI_STATUS
-NorFlashPlatformGetDevices (
-  OUT NOR_FLASH_DESCRIPTION  **NorFlashDescriptions,
-  OUT UINT32                 *Count
+VirtNorFlashPlatformGetDevices (
+  OUT VIRT_NOR_FLASH_DESCRIPTION  **NorFlashDescriptions,
+  OUT UINT32                      *Count
   )
 {
   FDT_CLIENT_PROTOCOL  *FdtClient;

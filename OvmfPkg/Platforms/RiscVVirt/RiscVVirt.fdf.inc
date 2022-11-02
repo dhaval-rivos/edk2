@@ -46,7 +46,7 @@ DEFINE FVMAIN_SIZE                   = 0x00200000
 # The total size of EFI Variable FD must include
 # all of sub regions of EFI Variable
 #
-!ifdef $(UNIFIED_VARSTORE)
+!if $(UNIFIED_VARSTORE) == TRUE
 DEFINE VARS_OFFSET                   = $(CODE_SIZE)
 !else
 DEFINE VARS_OFFSET                   = 0x00000000

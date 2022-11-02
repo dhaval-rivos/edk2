@@ -13,14 +13,14 @@
 #define QEMU_NOR_BLOCK_SIZE  SIZE_256KB
 
 EFI_STATUS
-NorFlashPlatformInitialization (
+VirtNorFlashPlatformInitialization (
   VOID
   )
 {
   return EFI_SUCCESS;
 }
 
-NOR_FLASH_DESCRIPTION  mNorFlashDevice =
+VIRT_NOR_FLASH_DESCRIPTION  mNorFlashDevice =
 {
   FixedPcdGet32 (PcdOvmfFdBaseAddress),
   FixedPcdGet64 (PcdFlashNvStorageVariableBase),
@@ -29,9 +29,9 @@ NOR_FLASH_DESCRIPTION  mNorFlashDevice =
 };
 
 EFI_STATUS
-NorFlashPlatformGetDevices (
-  OUT NOR_FLASH_DESCRIPTION  **NorFlashDescriptions,
-  OUT UINT32                 *Count
+VirtNorFlashPlatformGetDevices (
+  OUT VIRT_NOR_FLASH_DESCRIPTION  **NorFlashDescriptions,
+  OUT UINT32                      *Count
   )
 {
   *NorFlashDescriptions = &mNorFlashDevice;
