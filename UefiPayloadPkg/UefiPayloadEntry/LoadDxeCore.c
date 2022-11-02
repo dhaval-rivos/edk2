@@ -328,16 +328,36 @@ UniversalLoadDxeCore (
   OUT PHYSICAL_ADDRESS            *DxeCoreEntryPoint
   )
 {
-  EFI_STATUS            Status;
-  EFI_FFS_FILE_HEADER   *FileHeader;
-  VOID                  *PeCoffImage;
-  EFI_PHYSICAL_ADDRESS  ImageAddress;
-  UINT64                ImageSize;
+  EFI_STATUS                   Status;
+  EFI_FFS_FILE_HEADER          *FileHeader;
+  VOID                         *PeCoffImage;
+  EFI_PHYSICAL_ADDRESS         ImageAddress;
+  UINT64                       ImageSize;
+  EFI_FIRMWARE_VOLUME_HEADER   *DxeCoreFv;
+
+
+  //
+  // DXE FV is inside Payload FV. Here find DXE FV from Payload FV
+  //
+  Status = FvFindFileByTypeGuid (DxeFv, EFI_FV_FILETYPE_FIRMWARE_VOLUME_IMAGE, NULL, &FileHeader);
+  if (EFI_ERROR (Status)) {
+    return Status;
+  }
+
+  Status = FileFindSection (FileHeader, EFI_SECTION_FIRMWARE_VOLUME_IMAGE, (VOID **)&DxeCoreFv);
+  if (EFI_ERROR (Status)) {
+    return Status;
+  }
+
+  //
+  // Report DXE FV to DXE core
+  //
+  BuildFvHob ((EFI_PHYSICAL_ADDRESS)(UINTN)DxeCoreFv, DxeCoreFv->FvLength);
 
   //
   // Find DXE core file from DXE FV
   //
-  Status = FvFindFileByTypeGuid (DxeFv, EFI_FV_FILETYPE_DXE_CORE, NULL, &FileHeader);
+  Status = FvFindFileByTypeGuid (DxeCoreFv, EFI_FV_FILETYPE_DXE_CORE, NULL, &FileHeader);
   if (EFI_ERROR (Status)) {
     return Status;
   }

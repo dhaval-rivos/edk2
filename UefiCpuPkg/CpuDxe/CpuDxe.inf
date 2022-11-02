@@ -93,6 +93,7 @@
   gUefiCpuPkgTokenSpaceGuid.PcdCpuStackSwitchExceptionList              ## CONSUMES
   gUefiCpuPkgTokenSpaceGuid.PcdCpuKnownGoodStackSize                    ## CONSUMES
   gEfiMdeModulePkgTokenSpaceGuid.PcdTdxSharedBitMask                    ## CONSUMES
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuCoreCrystalClockFrequency             ## CONSUMES
 
 [Pcd.RISCV64]
   gUefiCpuPkgTokenSpaceGuid.PcdCpuCoreCrystalClockFrequency             ## CONSUMES
