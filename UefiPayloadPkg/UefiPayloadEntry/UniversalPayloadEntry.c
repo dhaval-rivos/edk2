@@ -293,7 +293,7 @@ IsHobNeed (
 **/
 EFI_STATUS
 BuildHobs (
-  IN  UINTN                       BootloaderParameter,
+  IN  const void*                 fdt,
   OUT EFI_FIRMWARE_VOLUME_HEADER  **DxeFv
   )
 {
@@ -310,7 +310,7 @@ BuildHobs (
 
   MinimalNeededSize = FixedPcdGet32 (PcdSystemMemoryUefiRegionSize);
 
-  ASSERT ((UINT8 *)BootloaderParameter != NULL);
+  ASSERT ((UINT8 *)fdt != NULL);
 
     // HOB region is used for HOB and memory allocation for this module
   MemoryBottom    = PcdGet32 (PcdPayloadFdMemBase);
@@ -381,14 +381,15 @@ BuildHobs (
   Entry point to the C language phase of UEFI payload.
   Bootloader in this case contains FDT entry
 
-  @param[in]   BootloaderParameter    The starting address of bootloader parameter block.
+  @param[in]   fdt    The starting address of bootloader parameter block.
 
   @retval      It will not return if SUCCESS, and return error when passing bootloader parameter.
 **/
 EFI_STATUS
 EFIAPI
 _ModuleEntryPoint (
-  IN UINTN  BootloaderParameter
+  IN UINTN  BootHartId,
+  IN UINTN  fdt
   )
 {
   EFI_STATUS                  Status;
@@ -397,11 +398,9 @@ _ModuleEntryPoint (
   EFI_FIRMWARE_VOLUME_HEADER  *DxeFv;
   EFI_RISCV_FIRMWARE_CONTEXT  FirmwareContext;
 
-  register UINTN BootHartId asm("a1");
-
   DxeFv    = NULL;
   FirmwareContext.BootHartId          = BootHartId;
-  FirmwareContext.FlattenedDeviceTree = (UINT64)BootloaderParameter;
+  FirmwareContext.FlattenedDeviceTree = (UINT64)fdt;
   SetFirmwareContextPointer (&FirmwareContext);
 
   // Initialize floating point operating environment to be compliant
@@ -409,7 +408,7 @@ _ModuleEntryPoint (
   //InitializeFloatingPointUnits (); //TODO: Remove this Arch specific.
 
   // Build HOB based on information from Bootloader
-  Status = BuildHobs (BootloaderParameter, &DxeFv);
+  Status = BuildHobs ((const void*)fdt, &DxeFv);
   ASSERT_EFI_ERROR (Status);
 
   DEBUG_CODE (
