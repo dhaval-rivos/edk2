@@ -7,6 +7,7 @@
 
 #include "UefiPayloadEntry.h"
 #include <Library/BaseRiscVSbiLib.h>
+#include <libfdt.h>
 
 #define MEMORY_ATTRIBUTE_MASK  (EFI_RESOURCE_ATTRIBUTE_PRESENT             |        \
                                        EFI_RESOURCE_ATTRIBUTE_INITIALIZED         | \
@@ -285,7 +286,7 @@ IsHobNeed (
 /**
   It will build HOBs based on information from bootloaders.
 
-  @param[in]  BootloaderParameter   The starting memory address of bootloader parameter block.
+  @param[in]  fdt   The starting memory address of bootloader parameter block.
   @param[out] DxeFv                 The pointer to the DXE FV in memory.
 
   @retval EFI_SUCCESS        If it completed successfully.
@@ -307,6 +308,10 @@ BuildHobs (
   EFI_RESOURCE_ATTRIBUTE_TYPE   Attribue;
   MEMORY_MAP_ENTRY              MemoryMap;
   UNIVERSAL_PAYLOAD_SERIAL_PORT_INFO  *UniversalSerialPort;
+  VOID                                *NewBase;
+  UINTN                               FdtSize;
+  UINTN                               FdtPages;
+  UINT64                              *FdtHobData;
 
   MinimalNeededSize = FixedPcdGet32 (PcdSystemMemoryUefiRegionSize);
 
@@ -359,9 +364,19 @@ BuildHobs (
   // setting or the HART configuration.
   //
   BuildCpuHob (48, 32);
-  //
-  // Get DXE FV location
-  //
+
+  ASSERT ((UINT8 *)fdt != NULL);
+  ASSERT (fdt_check_header (fdt) == 0);
+
+  FdtSize  = fdt_totalsize (fdt);
+  FdtPages = EFI_SIZE_TO_PAGES (FdtSize);
+  NewBase  = AllocatePages (FdtPages);
+  ASSERT (NewBase != NULL);
+  fdt_open_into (fdt, NewBase, EFI_PAGES_TO_SIZE (FdtPages));
+
+  FdtHobData = BuildGuidHob (&gFdtHobGuid, sizeof *FdtHobData);
+  ASSERT (FdtHobData != NULL);
+  *FdtHobData = (UINTN)NewBase;
 
   //
   // Create guid hob for acpi board information
@@ -421,6 +436,13 @@ _ModuleEntryPoint (
   FixUpPcdDatabase (DxeFv);
   Status = UniversalLoadDxeCore (DxeFv, &DxeCoreEntryPoint);
   ASSERT_EFI_ERROR (Status);
+
+ // DEBUG_CODE (
+    //
+    // Dump the Hobs from boot loader
+    //
+//    PrintHob (mHobList);
+//    );
 
   //
   // Mask off all legacy 8259 interrupt sources

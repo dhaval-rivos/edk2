@@ -46,7 +46,7 @@
   MdeModulePkg/MdeModulePkg.dec
   UefiCpuPkg/UefiCpuPkg.dec
   UefiPayloadPkg/UefiPayloadPkg.dec
-
+  EmbeddedPkg/EmbeddedPkg.dec
 [LibraryClasses]
   BaseMemoryLib
   DebugLib
@@ -56,6 +56,7 @@
   HobLib
   PeCoffLib
   CpuLib
+  FdtLib
 
 [LibraryClasses.IA32, LibraryClasses.X64]
   UefiCpuLib
@@ -78,7 +79,7 @@
   gUniversalPayloadPciRootBridgeInfoGuid
   gUniversalPayloadSmbios3TableGuid
   gEdkiiBootManagerMenuFileGuid
-
+  gFdtHobGuid
 [FeaturePcd.IA32]
   gEfiMdeModulePkgTokenSpaceGuid.PcdDxeIplSwitchToLongMode      ## CONSUMES
 
