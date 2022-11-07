@@ -253,6 +253,7 @@
 !endif
   PlatformBootManagerLib|UefiPayloadPkg/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
   FdtLib|EmbeddedPkg/Library/FdtLib/FdtLib.inf
+  RivosParseLib|UefiPayloadPkg/Library/RivosParseLib/RivosParseLib.inf
   #
   # Misc
   #

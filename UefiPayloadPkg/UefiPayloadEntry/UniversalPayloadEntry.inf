@@ -56,7 +56,7 @@
   HobLib
   PeCoffLib
   CpuLib
-  FdtLib
+  RivosParseLib
 
 [LibraryClasses.IA32, LibraryClasses.X64]
   UefiCpuLib

@@ -26,7 +26,11 @@
                                        EFI_RESOURCE_ATTRIBUTE_TESTED      )
 
 extern VOID  *mHobList;
-
+EFI_STATUS
+BuildBlHobs (
+  IN  const void*                 fdt,
+  OUT EFI_FIRMWARE_VOLUME_HEADER  **DxeFv
+  );
 /**
   Print all HOBs info from the HOB list.
 
@@ -423,7 +427,13 @@ _ModuleEntryPoint (
   //InitializeFloatingPointUnits (); //TODO: Remove this Arch specific.
 
   // Build HOB based on information from Bootloader
-  Status = BuildHobs ((const void*)fdt, &DxeFv);
+  Status = BuildBlHobs ((const void*)fdt, &DxeFv);
+  // Call constructor for all libraries
+  ProcessLibraryConstructorList ();
+
+  DEBUG ((DEBUG_INFO, "Entering Universal Payload...\n"));
+  DEBUG ((DEBUG_INFO, "sizeof(UINTN) = 0x%x\n", sizeof (UINTN)));
+
   ASSERT_EFI_ERROR (Status);
 
   DEBUG_CODE (
@@ -436,13 +446,6 @@ _ModuleEntryPoint (
   FixUpPcdDatabase (DxeFv);
   Status = UniversalLoadDxeCore (DxeFv, &DxeCoreEntryPoint);
   ASSERT_EFI_ERROR (Status);
-
- // DEBUG_CODE (
-    //
-    // Dump the Hobs from boot loader
-    //
-//    PrintHob (mHobList);
-//    );
 
   //
   // Mask off all legacy 8259 interrupt sources
