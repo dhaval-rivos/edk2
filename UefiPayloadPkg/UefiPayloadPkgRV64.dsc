@@ -182,6 +182,8 @@
   PciLib|MdePkg/Library/BasePciLibPciExpress/BasePciLibPciExpress.inf
   PciExpressLib|MdePkg/Library/BasePciExpressLib/BasePciExpressLib.inf
 !endif
+  PciCapLib|OvmfPkg/Library/BasePciCapLib/BasePciCapLib.inf
+  PciCapPciIoLib|OvmfPkg/Library/UefiPciCapPciIoLib/UefiPciCapPciIoLib.inf
   PciSegmentLib|MdePkg/Library/PciSegmentLibSegmentInfo/BasePciSegmentLibSegmentInfo.inf
   PciSegmentInfoLib|UefiPayloadPkg/Library/PciSegmentInfoLibAcpiBoardInfo/PciSegmentInfoLibAcpiBoardInfo.inf
   PeCoffLib|MdePkg/Library/BasePeCoffLib/BasePeCoffLib.inf
@@ -288,6 +290,10 @@
   SafeIntLib|MdePkg/Library/BaseSafeIntLib/BaseSafeIntLib.inf
   BmpSupportLib|MdeModulePkg/Library/BaseBmpSupportLib/BaseBmpSupportLib.inf
 !endif
+
+ # Virtio Support
+  VirtioLib|OvmfPkg/Library/VirtioLib/VirtioLib.inf
+  VirtioMmioDeviceLib|OvmfPkg/Library/VirtioMmioDeviceLib/VirtioMmioDeviceLib.inf
 
 [LibraryClasses.common.SEC]
   HobLib|UefiPayloadPkg/Library/PayloadEntryHobLib/HobLib.inf
@@ -626,6 +632,19 @@
   }
 
   #
+  # Platform Driver
+  #
+  OvmfPkg/Fdt/VirtioFdtDxe/VirtioFdtDxe.inf
+  EmbeddedPkg/Drivers/FdtClientDxe/FdtClientDxe.inf
+  OvmfPkg/Fdt/HighMemDxe/HighMemDxe.inf
+  OvmfPkg/VirtioBlkDxe/VirtioBlk.inf
+  OvmfPkg/VirtioScsiDxe/VirtioScsi.inf
+  OvmfPkg/VirtioNetDxe/VirtioNet.inf
+  OvmfPkg/VirtioRngDxe/VirtioRng.inf
+  OvmfPkg/VirtioPciDeviceDxe/VirtioPciDeviceDxe.inf
+  OvmfPkg/Virtio10Dxe/Virtio10.inf
+
+  #
   # SCSI/ATA/IDE/DISK Support
   #
   MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
@@ -738,6 +757,7 @@
   ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
   !include NetworkPkg/NetworkLibs.dsc.inc
   TimeBaseLib|EmbeddedPkg//Library/TimeBaseLib/TimeBaseLib.inf
+  OrderedCollectionLib|MdePkg/Library/BaseOrderedCollectionRedBlackTreeLib/BaseOrderedCollectionRedBlackTreeLib.inf
 
 [Components]
   ShellPkg/DynamicCommand/TftpDynamicCommand/TftpDynamicCommand.inf {
@@ -786,7 +806,6 @@
     <LibraryClasses>
       DevicePathLib|MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.inf
       HandleParsingLib|ShellPkg/Library/UefiHandleParsingLib/UefiHandleParsingLib.inf
-      OrderedCollectionLib|MdePkg/Library/BaseOrderedCollectionRedBlackTreeLib/BaseOrderedCollectionRedBlackTreeLib.inf
       PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
       ShellCEntryLib|ShellPkg/Library/UefiShellCEntryLib/UefiShellCEntryLib.inf
       ShellCommandLib|ShellPkg/Library/UefiShellCommandLib/UefiShellCommandLib.inf

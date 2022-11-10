@@ -149,6 +149,19 @@ INF MdeModulePkg/Logo/LogoDxe.inf
 #
 INF MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
 INF MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
+INF  OvmfPkg/VirtioPciDeviceDxe/VirtioPciDeviceDxe.inf
+INF  OvmfPkg/Virtio10Dxe/Virtio10.inf
+
+#
+# Platform Driver
+#
+INF  OvmfPkg/Fdt/VirtioFdtDxe/VirtioFdtDxe.inf
+INF  EmbeddedPkg/Drivers/FdtClientDxe/FdtClientDxe.inf
+INF  OvmfPkg/Fdt/HighMemDxe/HighMemDxe.inf
+INF  OvmfPkg/VirtioBlkDxe/VirtioBlk.inf
+INF  OvmfPkg/VirtioScsiDxe/VirtioScsi.inf
+INF  OvmfPkg/VirtioNetDxe/VirtioNet.inf
+INF  OvmfPkg/VirtioRngDxe/VirtioRng.inf
 
 # RISC-V Core Drivers
 INF  UefiCpuPkg/CpuTimerDxe/CpuTimerDxe.inf
