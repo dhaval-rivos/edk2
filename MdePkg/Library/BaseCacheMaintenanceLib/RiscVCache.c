@@ -17,17 +17,31 @@
 **/
 #define RV64_CACHE_BLOCK_SIZE   64
 
-#define __stringify_1(x...)	#x
-#define __stringify(x...)	__stringify_1(x)
-
-#define CMO_OP(_op, _start)\
-asm volatile("cbo." __stringify(_op) " (%0)" :: "r" (Start))
-
 typedef enum{
   cln,
   flsh,
   invd,
 }CACHE_OP;
+
+/* Ideally we should do this through BaseLib.h by adding
+   Asm*CacheLine functions. This can be done after Initial
+   RV refactoring is complete. For now call functions directly
+*/
+VOID
+EFIAPI RiscVCpuCacheFlush (
+  UINTN
+  );
+
+VOID
+EFIAPI RiscVCpuCacheClean (
+  UINTN
+  );
+
+VOID
+EFIAPI RiscVCpuCacheInval (
+  UINTN
+  );
+
 
 /**
   Performs required opeartion on cache lines in the cache coherency domain
@@ -82,13 +96,13 @@ CacheOpCacheRange (
   do {
     switch (op) {
       case invd:
-        CMO_OP(inval, Start);
+        RiscVCpuCacheInval(Start);
         break;
       case flsh:
-        CMO_OP(flush, Start);
+        RiscVCpuCacheFlush(Start);
         break;
       case cln:
-        CMO_OP(clean, Start);
+        RiscVCpuCacheClean(Start);
         break;
       default:
         DEBUG ((DEBUG_ERROR, "%a:RISC-V unsupported operation\n"));
