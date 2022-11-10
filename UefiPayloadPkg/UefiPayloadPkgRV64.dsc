@@ -46,11 +46,7 @@
   DEFINE NVME_ENABLE                  = TRUE
 
   DEFINE UNIVERSAL_PAYLOAD            = TRUE
-  #
-  # NULL:    NullMemoryTestDxe
-  # GENERIC: GenericMemoryTestDxe
-  #
-  DEFINE MEMORY_TEST                  = NULL
+
   #
   # CPU options
   #
@@ -590,11 +586,7 @@
   MdeModulePkg/Universal/StatusCodeHandler/RuntimeDxe/StatusCodeHandlerRuntimeDxe.inf
   UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
   MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
-!if $(MEMORY_TEST) == "GENERIC"
-  MdeModulePkg/Universal/MemoryTest/GenericMemoryTestDxe/GenericMemoryTestDxe.inf
-!elseif $(MEMORY_TEST) == "NULL"
-  MdeModulePkg/Universal/MemoryTest/NullMemoryTestDxe/NullMemoryTestDxe.inf
-!endif
+
   MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
   MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
   MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf

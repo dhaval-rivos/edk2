@@ -134,11 +134,6 @@ INF MdeModulePkg/Universal/ResetSystemRuntimeDxe/ResetSystemRuntimeDxe.inf
 
 INF UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
 INF MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
-!if $(MEMORY_TEST) == "GENERIC"
-INF  MdeModulePkg/Universal/MemoryTest/GenericMemoryTestDxe/GenericMemoryTestDxe.inf
-!elseif $(MEMORY_TEST) == "NULL"
-INF  MdeModulePkg/Universal/MemoryTest/NullMemoryTestDxe/NullMemoryTestDxe.inf
-!endif
 INF MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
 INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
 INF MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
