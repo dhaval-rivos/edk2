@@ -1,5 +1,5 @@
 /** @file
-  CPU pause for RISC-V
+  CPU Cache Operations for RISC-V
 
   Copyright (c) 2020, Hewlett Packard Enterprise Development LP. All rights reserved.<BR>
   Copyright (c) 2022, Rivos Inc. All rights reserved.<BR>
@@ -16,11 +16,7 @@ RiscVCpuCacheFlush (
   );
 
 /**
-  Requests CPU to pause for a short period of time.
-
-  Requests CPU to pause for a short period of time. Typically used in MP
-  systems to prevent memory starvation while waiting for a spin lock.
-
+   Flush CPU Cacheline as per RV Zicbo spec
 **/
 VOID
 EFIAPI
@@ -37,11 +33,7 @@ RiscVCpuCacheClean (
   );
 
 /**
-  Requests CPU to pause for a short period of time.
-
-  Requests CPU to pause for a short period of time. Typically used in MP
-  systems to prevent memory starvation while waiting for a spin lock.
-
+   Clean CPU Cacheline as per RV Zicbo spec
 **/
 VOID
 EFIAPI
@@ -58,11 +50,7 @@ RiscVCpuCacheInvd (
   );
 
 /**
-  Requests CPU to pause for a short period of time.
-
-  Requests CPU to pause for a short period of time. Typically used in MP
-  systems to prevent memory starvation while waiting for a spin lock.
-
+   Invd CPU Cacheline as per RV Zicbo spec
 **/
 VOID
 EFIAPI
