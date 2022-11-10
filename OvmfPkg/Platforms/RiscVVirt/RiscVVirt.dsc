@@ -44,6 +44,13 @@
   DEFINE NETWORK_ISCSI_ENABLE     = FALSE
   DEFINE NETWORK_ALLOW_HTTP_CONNECTIONS = TRUE
 
+  #
+  # CMO support for RV. It depends on 2 factors. First support in compiler
+  # GCC:Binutils 2.39 is required. We could make it runtime detection later
+  # using FDT or feature CSR.
+  #
+  DEFINE RV_CMO_FEATURE_AVAILABLE = FALSE
+
 [BuildOptions]
   GCC:RELEASE_*_*_CC_FLAGS       = -DMDEPKG_NDEBUG
 !ifdef $(SOURCE_DEBUG_ENABLE)
@@ -80,7 +87,11 @@
   CpuLib|MdePkg/Library/BaseCpuLib/BaseCpuLib.inf
   PerformanceLib|MdePkg/Library/BasePerformanceLibNull/BasePerformanceLibNull.inf
   PeCoffLib|MdePkg/Library/BasePeCoffLib/BasePeCoffLib.inf
+!if $(RV_CMO_FEATURE_AVAILABLE) == FALSE
+  CacheMaintenanceLib|MdePkg/Library/BaseCacheMaintenanceLibNull/BaseCacheMaintenanceLibNull.inf
+!else
   CacheMaintenanceLib|MdePkg/Library/BaseCacheMaintenanceLib/BaseCacheMaintenanceLib.inf
+!endif
   UefiDecompressLib|MdePkg/Library/BaseUefiDecompressLib/BaseUefiDecompressLib.inf
   UefiHiiServicesLib|MdeModulePkg/Library/UefiHiiServicesLib/UefiHiiServicesLib.inf
   HiiLib|MdeModulePkg/Library/UefiHiiLib/UefiHiiLib.inf
