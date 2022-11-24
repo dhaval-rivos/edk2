@@ -38,12 +38,15 @@
   X64/VirtualMemory.c
   X64/DxeLoadFunc.c
 
+[Sources.RISCV64]
+  RiscV64/DxeLoadFunc.c
+
 [Packages]
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
   UefiCpuPkg/UefiCpuPkg.dec
   UefiPayloadPkg/UefiPayloadPkg.dec
-
+  EmbeddedPkg/EmbeddedPkg.dec
 [LibraryClasses]
   BaseMemoryLib
   DebugLib
@@ -53,8 +56,13 @@
   HobLib
   PeCoffLib
   CpuLib
+  RivosParseLib
+
+[LibraryClasses.IA32, LibraryClasses.X64]
   UefiCpuLib
 
+[LibraryClasses.RISCV64]
+  RiscVSbiLib
 [Guids]
   gEfiMemoryTypeInformationGuid
   gEfiFirmwareFileSystem2Guid
@@ -71,7 +79,7 @@
   gUniversalPayloadPciRootBridgeInfoGuid
   gUniversalPayloadSmbios3TableGuid
   gEdkiiBootManagerMenuFileGuid
-
+  gFdtHobGuid
 [FeaturePcd.IA32]
   gEfiMdeModulePkgTokenSpaceGuid.PcdDxeIplSwitchToLongMode      ## CONSUMES
 
@@ -79,7 +87,7 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdDxeIplBuildPageTables       ## CONSUMES
 
 
-[Pcd.IA32,Pcd.X64]
+[Pcd.IA32,Pcd.X64,Pcd.RISCV64]
   gUefiPayloadPkgTokenSpaceGuid.PcdPcdDriverFile
   gEfiMdeModulePkgTokenSpaceGuid.PcdUse1GPageTable                      ## SOMETIMES_CONSUMES
   gEfiMdeModulePkgTokenSpaceGuid.PcdPteMemoryEncryptionAddressOrMask    ## CONSUMES

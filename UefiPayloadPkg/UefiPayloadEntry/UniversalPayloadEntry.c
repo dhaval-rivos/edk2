@@ -6,6 +6,8 @@
 **/
 
 #include "UefiPayloadEntry.h"
+#include <Library/BaseRiscVSbiLib.h>
+#include <libfdt.h>
 
 #define MEMORY_ATTRIBUTE_MASK  (EFI_RESOURCE_ATTRIBUTE_PRESENT             |        \
                                        EFI_RESOURCE_ATTRIBUTE_INITIALIZED         | \
@@ -24,7 +26,11 @@
                                        EFI_RESOURCE_ATTRIBUTE_TESTED      )
 
 extern VOID  *mHobList;
-
+EFI_STATUS
+BuildBlHobs (
+  IN  const void*                 fdt,
+  OUT EFI_FIRMWARE_VOLUME_HEADER  **DxeFv
+  );
 /**
   Print all HOBs info from the HOB list.
 
@@ -284,7 +290,7 @@ IsHobNeed (
 /**
   It will build HOBs based on information from bootloaders.
 
-  @param[in]  BootloaderParameter   The starting memory address of bootloader parameter block.
+  @param[in]  fdt   The starting memory address of bootloader parameter block.
   @param[out] DxeFv                 The pointer to the DXE FV in memory.
 
   @retval EFI_SUCCESS        If it completed successfully.
@@ -292,114 +298,89 @@ IsHobNeed (
 **/
 EFI_STATUS
 BuildHobs (
-  IN  UINTN                       BootloaderParameter,
+  IN  const void*                 fdt,
   OUT EFI_FIRMWARE_VOLUME_HEADER  **DxeFv
   )
 {
-  EFI_PEI_HOB_POINTERS          Hob;
   UINTN                         MinimalNeededSize;
   EFI_PHYSICAL_ADDRESS          FreeMemoryBottom;
   EFI_PHYSICAL_ADDRESS          FreeMemoryTop;
   EFI_PHYSICAL_ADDRESS          MemoryBottom;
-  EFI_PHYSICAL_ADDRESS          MemoryTop;
-  EFI_HOB_RESOURCE_DESCRIPTOR   *PhitResourceHob;
-  EFI_HOB_RESOURCE_DESCRIPTOR   *ResourceHob;
-  UNIVERSAL_PAYLOAD_EXTRA_DATA  *ExtraData;
   UINT8                         *GuidHob;
-  EFI_HOB_FIRMWARE_VOLUME       *FvHob;
   UNIVERSAL_PAYLOAD_ACPI_TABLE  *AcpiTable;
   ACPI_BOARD_INFO               *AcpiBoardInfo;
+  EFI_RESOURCE_ATTRIBUTE_TYPE   Attribue;
+  MEMORY_MAP_ENTRY              MemoryMap;
+  UNIVERSAL_PAYLOAD_SERIAL_PORT_INFO  *UniversalSerialPort;
+  VOID                                *NewBase;
+  UINTN                               FdtSize;
+  UINTN                               FdtPages;
+  UINT64                              *FdtHobData;
 
-  Hob.Raw           = (UINT8 *)BootloaderParameter;
   MinimalNeededSize = FixedPcdGet32 (PcdSystemMemoryUefiRegionSize);
 
-  ASSERT (Hob.Raw != NULL);
-  ASSERT ((UINTN)Hob.HandoffInformationTable->EfiFreeMemoryTop == Hob.HandoffInformationTable->EfiFreeMemoryTop);
-  ASSERT ((UINTN)Hob.HandoffInformationTable->EfiMemoryTop == Hob.HandoffInformationTable->EfiMemoryTop);
-  ASSERT ((UINTN)Hob.HandoffInformationTable->EfiFreeMemoryBottom == Hob.HandoffInformationTable->EfiFreeMemoryBottom);
-  ASSERT ((UINTN)Hob.HandoffInformationTable->EfiMemoryBottom == Hob.HandoffInformationTable->EfiMemoryBottom);
+  ASSERT ((UINT8 *)fdt != NULL);
 
-  //
-  // Try to find Resource Descriptor HOB that contains Hob range EfiMemoryBottom..EfiMemoryTop
-  //
-  PhitResourceHob = FindResourceDescriptorByRange (Hob.Raw, Hob.HandoffInformationTable->EfiMemoryBottom, Hob.HandoffInformationTable->EfiMemoryTop);
-  if (PhitResourceHob == NULL) {
-    //
-    // Boot loader's Phit Hob is not in an available Resource Descriptor, find another Resource Descriptor for new Phit Hob
-    //
-    ResourceHob = FindAnotherHighestBelow4GResourceDescriptor (Hob.Raw, MinimalNeededSize, NULL);
-    if (ResourceHob == NULL) {
-      return EFI_NOT_FOUND;
-    }
+    // HOB region is used for HOB and memory allocation for this module
+  MemoryBottom    = PcdGet32 (PcdPayloadFdMemBase);
+  FreeMemoryBottom = ALIGN_VALUE (MemoryBottom + PcdGet32 (PcdPayloadFdMemSize), SIZE_1MB);
+  FreeMemoryTop  = FreeMemoryBottom + FixedPcdGet32 (PcdSystemMemoryUefiRegionSize);
 
-    MemoryBottom     = ResourceHob->PhysicalStart + ResourceHob->ResourceLength - MinimalNeededSize;
-    FreeMemoryBottom = MemoryBottom;
-    FreeMemoryTop    = ResourceHob->PhysicalStart + ResourceHob->ResourceLength;
-    MemoryTop        = FreeMemoryTop;
-  } else if (PhitResourceHob->PhysicalStart + PhitResourceHob->ResourceLength - Hob.HandoffInformationTable->EfiMemoryTop >= MinimalNeededSize) {
-    //
-    // New availiable Memory range in new hob is right above memory top in old hob.
-    //
-    MemoryBottom     = Hob.HandoffInformationTable->EfiFreeMemoryTop;
-    FreeMemoryBottom = Hob.HandoffInformationTable->EfiMemoryTop;
-    FreeMemoryTop    = FreeMemoryBottom + MinimalNeededSize;
-    MemoryTop        = FreeMemoryTop;
-  } else if (Hob.HandoffInformationTable->EfiMemoryBottom - PhitResourceHob->PhysicalStart >= MinimalNeededSize) {
-    //
-    // New availiable Memory range in new hob is right below memory bottom in old hob.
-    //
-    MemoryBottom     = Hob.HandoffInformationTable->EfiMemoryBottom - MinimalNeededSize;
-    FreeMemoryBottom = MemoryBottom;
-    FreeMemoryTop    = Hob.HandoffInformationTable->EfiMemoryBottom;
-    MemoryTop        = Hob.HandoffInformationTable->EfiMemoryTop;
-  } else {
-    //
-    // In the Resource Descriptor HOB contains boot loader Hob, there is no enough free memory size for payload hob
-    // Find another Resource Descriptor Hob
-    //
-    ResourceHob = FindAnotherHighestBelow4GResourceDescriptor (Hob.Raw, MinimalNeededSize, PhitResourceHob);
-    if (ResourceHob == NULL) {
-      return EFI_NOT_FOUND;
-    }
+  HobConstructor ((VOID *)(UINTN)MemoryBottom, (VOID *)(UINTN)FreeMemoryTop, (VOID *)(UINTN)FreeMemoryBottom, (VOID *)(UINTN)FreeMemoryTop);
+  //
+  // Build serial port info
+  //
+  UniversalSerialPort = BuildGuidHob (&gUniversalPayloadSerialPortInfoGuid, sizeof (UNIVERSAL_PAYLOAD_SERIAL_PORT_INFO));
+  ASSERT (UniversalSerialPort != NULL);
+  UniversalSerialPort->Header.Revision = UNIVERSAL_PAYLOAD_SERIAL_PORT_INFO_REVISION;
+  UniversalSerialPort->Header.Length   = sizeof (UNIVERSAL_PAYLOAD_SERIAL_PORT_INFO);
+  UniversalSerialPort->UseMmio         = TRUE;
+  UniversalSerialPort->RegisterBase    = 0x10000000;
+  UniversalSerialPort->BaudRate        = 115200;
+  UniversalSerialPort->RegisterStride  = 1;
 
-    MemoryBottom     = ResourceHob->PhysicalStart + ResourceHob->ResourceLength - MinimalNeededSize;
-    FreeMemoryBottom = MemoryBottom;
-    FreeMemoryTop    = ResourceHob->PhysicalStart + ResourceHob->ResourceLength;
-    MemoryTop        = FreeMemoryTop;
-  }
+  // Call constructor for all libraries
+  ProcessLibraryConstructorList ();
 
-  HobConstructor ((VOID *)(UINTN)MemoryBottom, (VOID *)(UINTN)MemoryTop, (VOID *)(UINTN)FreeMemoryBottom, (VOID *)(UINTN)FreeMemoryTop);
-  //
-  // From now on, mHobList will point to the new Hob range.
-  //
+  DEBUG ((DEBUG_INFO, "Entering Universal Payload...\n"));
+  DEBUG ((DEBUG_INFO, "sizeof(UINTN) = 0x%x\n", sizeof (UINTN)));
 
-  //
-  // Create an empty FvHob for the DXE FV that contains DXE core.
-  //
-  BuildFvHob ((EFI_PHYSICAL_ADDRESS)0, 0);
-  //
-  // Since payload created new Hob, move all hobs except PHIT from boot loader hob list.
-  //
-  while (!END_OF_HOB_LIST (Hob)) {
-    if (IsHobNeed (Hob)) {
-      // Add this hob to payload HOB
-      AddNewHob (&Hob);
-    }
+  MemoryMap.Base = 0x80000000;
+  MemoryMap.Size = 0x40000000;
+  MemoryMap.Type = EFI_RESOURCE_SYSTEM_MEMORY;
+  MemoryMap.Flag = 0;
 
-    Hob.Raw = GET_NEXT_HOB (Hob);
-  }
+  Attribue = EFI_RESOURCE_ATTRIBUTE_PRESENT |
+             EFI_RESOURCE_ATTRIBUTE_INITIALIZED |
+             EFI_RESOURCE_ATTRIBUTE_TESTED |
+             EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE |
+             EFI_RESOURCE_ATTRIBUTE_WRITE_COMBINEABLE |
+             EFI_RESOURCE_ATTRIBUTE_WRITE_THROUGH_CACHEABLE |
+             EFI_RESOURCE_ATTRIBUTE_WRITE_BACK_CACHEABLE;
 
-  //
-  // Get DXE FV location
-  //
-  GuidHob = GetFirstGuidHob (&gUniversalPayloadExtraDataGuid);
-  ASSERT (GuidHob != NULL);
-  ExtraData = (UNIVERSAL_PAYLOAD_EXTRA_DATA *)GET_GUID_HOB_DATA (GuidHob);
-  ASSERT (ExtraData->Count == 1);
-  ASSERT (AsciiStrCmp (ExtraData->Entry[0].Identifier, "uefi_fv") == 0);
+  BuildResourceDescriptorHob (MemoryMap.Type, Attribue, (EFI_PHYSICAL_ADDRESS)MemoryMap.Base, MemoryMap.Size);
 
-  *DxeFv = (EFI_FIRMWARE_VOLUME_HEADER *)(UINTN)ExtraData->Entry[0].Base;
-  ASSERT ((*DxeFv)->FvLength == ExtraData->Entry[0].Size);
+  // Build the CPU HOB with guest RAM size dependent address width and 16-bits
+  // of IO space. (Side note: unlike other HOBs, the CPU HOB is needed during
+  // S3 resume as well, so we build it unconditionally.)
+  //
+  // TODO: Determine this dynamically from the platform
+  // setting or the HART configuration.
+  //
+  BuildCpuHob (48, 32);
+
+  ASSERT ((UINT8 *)fdt != NULL);
+  ASSERT (fdt_check_header (fdt) == 0);
+
+  FdtSize  = fdt_totalsize (fdt);
+  FdtPages = EFI_SIZE_TO_PAGES (FdtSize);
+  NewBase  = AllocatePages (FdtPages);
+  ASSERT (NewBase != NULL);
+  fdt_open_into (fdt, NewBase, EFI_PAGES_TO_SIZE (FdtPages));
+
+  FdtHobData = BuildGuidHob (&gFdtHobGuid, sizeof *FdtHobData);
+  ASSERT (FdtHobData != NULL);
+  *FdtHobData = (UINTN)NewBase;
 
   //
   // Create guid hob for acpi board information
@@ -411,41 +392,49 @@ BuildHobs (
     ASSERT (AcpiBoardInfo != NULL);
   }
 
-  //
-  // Update DXE FV information to first fv hob in the hob list, which
-  // is the empty FvHob created before.
-  //
-  FvHob              = GetFirstHob (EFI_HOB_TYPE_FV);
-  FvHob->BaseAddress = (EFI_PHYSICAL_ADDRESS)(UINTN)*DxeFv;
-  FvHob->Length      = (*DxeFv)->FvLength;
+  *DxeFv = (EFI_FIRMWARE_VOLUME_HEADER *)(UINTN)PcdGet32 (PcdPayloadFdMemBase);
   return EFI_SUCCESS;
 }
 
 /**
   Entry point to the C language phase of UEFI payload.
+  Bootloader in this case contains FDT entry
 
-  @param[in]   BootloaderParameter    The starting address of bootloader parameter block.
+  @param[in]   fdt    The starting address of bootloader parameter block.
 
   @retval      It will not return if SUCCESS, and return error when passing bootloader parameter.
 **/
 EFI_STATUS
 EFIAPI
 _ModuleEntryPoint (
-  IN UINTN  BootloaderParameter
+  IN UINTN  BootHartId,
+  IN UINTN  fdt
   )
 {
   EFI_STATUS                  Status;
   PHYSICAL_ADDRESS            DxeCoreEntryPoint;
   EFI_PEI_HOB_POINTERS        Hob;
   EFI_FIRMWARE_VOLUME_HEADER  *DxeFv;
+  EFI_RISCV_FIRMWARE_CONTEXT  FirmwareContext;
 
-  mHobList = (VOID *)BootloaderParameter;
   DxeFv    = NULL;
+  FirmwareContext.BootHartId          = BootHartId;
+  FirmwareContext.FlattenedDeviceTree = (UINT64)fdt;
+  SetFirmwareContextPointer (&FirmwareContext);
+
+  // Initialize floating point operating environment to be compliant
+  // with UEFI spec.
+  //InitializeFloatingPointUnits (); //TODO: Remove this Arch specific.
+
+  // Build HOB based on information from Bootloader
+  Status = BuildBlHobs ((const void*)fdt, &DxeFv);
   // Call constructor for all libraries
   ProcessLibraryConstructorList ();
 
   DEBUG ((DEBUG_INFO, "Entering Universal Payload...\n"));
   DEBUG ((DEBUG_INFO, "sizeof(UINTN) = 0x%x\n", sizeof (UINTN)));
+
+  ASSERT_EFI_ERROR (Status);
 
   DEBUG_CODE (
     //
@@ -454,13 +443,6 @@ _ModuleEntryPoint (
     PrintHob (mHobList);
     );
 
-  // Initialize floating point operating environment to be compliant with UEFI spec.
-  InitializeFloatingPointUnits ();
-
-  // Build HOB based on information from Bootloader
-  Status = BuildHobs (BootloaderParameter, &DxeFv);
-  ASSERT_EFI_ERROR (Status);
-
   FixUpPcdDatabase (DxeFv);
   Status = UniversalLoadDxeCore (DxeFv, &DxeCoreEntryPoint);
   ASSERT_EFI_ERROR (Status);
@@ -468,8 +450,8 @@ _ModuleEntryPoint (
   //
   // Mask off all legacy 8259 interrupt sources
   //
-  IoWrite8 (LEGACY_8259_MASK_REGISTER_MASTER, 0xFF);
-  IoWrite8 (LEGACY_8259_MASK_REGISTER_SLAVE, 0xFF);
+  //IoWrite8 (LEGACY_8259_MASK_REGISTER_MASTER, 0xFF); //TODO: Remove this Arch specific.
+  //IoWrite8 (LEGACY_8259_MASK_REGISTER_SLAVE, 0xFF); //TODO: Remove this Arch specific.
 
   Hob.HandoffInformationTable = (EFI_HOB_HANDOFF_INFO_TABLE *)GetFirstHob (EFI_HOB_TYPE_HANDOFF);
   HandOffToDxeCore (DxeCoreEntryPoint, Hob);
